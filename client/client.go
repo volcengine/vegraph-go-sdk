@@ -229,6 +229,28 @@ func (c *Client) submitBatchRequestAuthEncrypted(ctx context.Context, request *b
 	return c.getKlient().GremlinQuery(ctx, request)
 }
 
+// need to check first err with ErrorCode_SYSTEM_ERROR and ErrorCode_INVALID_REQUEST 
+func (c *Client) BatchSubmit(ctx context.Context, query []string, table ...string) ([]structure.Element, []error) {
+	request := &bytegraph.GremlinQueryRequest{
+		Queries:   query,
+		UseBinary: true,
+	}
+	reqTable, err := c.reqTable(table...)
+	if err != nil {
+		return nil, []error{err}
+	}
+	request.Table = reqTable
+	elems, _, errs := c.submitBatchRequest(ctx, request)
+	var respErrs []error
+	if len(errs) > 0 {
+		respErrs = errs
+	} else {
+		respErrs = []error{gerrors.New(gerrors.ErrorCode_SYSTEM_ERROR, fmt.Errorf("unexpected error number returned by submitTemplates: %v", errs))}
+	}
+	// respErrs may be not equal to length of query due to ErrorCode_SYSTEM_ERROR and ErrorCode_INVALID_REQUEST 
+	return elems, respErrs
+}
+
 // table is used to specify a temporary table in replace of default table to use in the request.
 func (c *Client) Submit(ctx context.Context, query string, table ...string) (structure.Element, error) {
 	request := &bytegraph.GremlinQueryRequest{
