@@ -229,24 +229,23 @@ func (c *Client) submitBatchRequestAuthEncrypted(ctx context.Context, request *b
 	return c.getKlient().GremlinQuery(ctx, request)
 }
 // table is used to specify a temporary table in replace of default table to use in the request.
-func (c *Client) BatchSubmit(ctx context.Context, query ...string) (structure.Element, error) {
+func (c *Client) BatchSubmit(ctx context.Context, query ...string) ([]structure.Element, []error) {
 	request := &bytegraph.GremlinQueryRequest{
 		Queries:   query,
 		UseBinary: true,
 	}
 	request.Table = c.table
 	elems, _, errs := c.submitBatchRequest(ctx, request)
-	var elem structure.Element
-	var err error
+	var respErrs []error
 	if len(errs) > 0 {
-		err = errs[0]
+		respErrs = errs
 	} else {
-		err = gerrors.New(gerrors.ErrorCode_SYSTEM_ERROR, fmt.Errorf("unexpected error number returned by submitTemplates: %v", errs))
+		respErrs = []error{gerrors.New(gerrors.ErrorCode_SYSTEM_ERROR, fmt.Errorf("unexpected error number returned by submitTemplates: %v", errs))}
 	}
 	if len(elems) > 0 {
-		elem = elems[0]
+		return elems, respErrs
 	}
-	return elem, err
+	return nil, respErrs
 }
 
 // table is used to specify a temporary table in replace of default table to use in the request.
