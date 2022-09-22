@@ -13,7 +13,7 @@ import (
 
 func TestSubmit(t *testing.T) {
 	ctx := context.Background()
-	cli, err := NewClient("destService", WithHostPort("ip:port"), WithUserPwd("user", "passwd"))
+	cli, err := NewClient(WithHostPort("ip:port"), WithUserPwd("user", "passwd"))
 	assert.True(t, err == nil)
 	// 用mock 的client代替thrift client
 	cli.setklient(&TMockedClient{})

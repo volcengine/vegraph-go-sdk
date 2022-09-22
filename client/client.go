@@ -85,7 +85,7 @@ func NewDebugMiddleWare() endpoint.Middleware {
 }
 
 // Create a goroutine-safe ByteGraph client.
-func NewClient(destService string, ops ...Option) (*Client, error) {
+func NewClient(ops ...Option) (*Client, error) {
 	opts := newDefaultOptions()
 	for _, do := range ops {
 		do(opts)
@@ -100,9 +100,6 @@ func NewClient(destService string, ops ...Option) (*Client, error) {
 
 	var authHostPorts []string
 	if len(opts.domainName) != 0 {
-		if len(destService) == 0 {
-			destService = "anything"
-		}
 		es, err := net.LookupHost(opts.domainName)
 		if err != nil {
 			err = fmt.Errorf("LookupHost(%v): %s", opts.domainName, err.Error())
@@ -117,9 +114,6 @@ func NewClient(destService string, ops ...Option) (*Client, error) {
 		}
 
 	} else if client.authType == AuthType_PasswordSha256 && len(opts.HostPorts) > 0 {
-		if len(destService) == 0 {
-			destService = "anything"
-		}
 		for _, hostPort := range opts.HostPorts {
 			host, _, err := net.SplitHostPort(hostPort)
 			if err != nil {
@@ -146,7 +140,7 @@ func NewClient(destService string, ops ...Option) (*Client, error) {
 		kitex.WithTransportProtocol(transport.Framed))
 
 	// create kite client
-	clt, err := bytegraphservice.NewClient(destService, kitexOpts...)
+	clt, err := bytegraphservice.NewClient("destService", kitexOpts...)
 	if err != nil {
 		return nil, gerrors.New(gerrors.ErrorCode_NETWORK_ERROR, err)
 	}
