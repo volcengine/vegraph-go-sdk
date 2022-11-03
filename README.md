@@ -9,7 +9,7 @@ VeGraph Go Client provides support for interacting with the graph database veGra
 ```
 func TestGremlin(t *testing.T) {
     ctx := context.Background()
-    cli, err := client.NewClient("destServiceXXX",
+    cli, err := client.NewClient(
         client.WithHostPort("host:port"),
         WithUserPwd("user", "password"),
         WithDefaultTable("default"),

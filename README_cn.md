@@ -7,7 +7,7 @@ veGraph是火山引擎自研的图存储引擎，veGraph SDK for Go 提供了访
 # 接入方式
     func TestGremlin(t *testing.T) {
         ctx := context.Background()
-        cli, err := client.NewClient("destServiceXXX",
+        cli, err := client.NewClient(
             client.WithHostPort("host:port"),
             WithUserPwd("user", "password"),
             WithDefaultTable("default"),
