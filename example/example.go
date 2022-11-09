@@ -169,7 +169,7 @@ func main() {
 			options.UserName = c.Args[0]
 			options.Password = c.Args[1]
 			var err error
-			cli, err = client.NewClient("anything", connection,
+			cli, err = client.NewClient(connection,
 				client.WithUserPwd(options.UserName, options.Password),
 				client.WithAuthPort(options.AuthPort))
 
@@ -190,7 +190,7 @@ func main() {
 			options.UserName = c.Args[0]
 			options.Password = c.Args[1]
 			var err error
-			cli, err = client.NewClient("",
+			cli, err = client.NewClient(
 				client.WithHostPort(fmt.Sprintf("%v:%v", options.Host, options.Port)), client.WithUserPwdEncrypted(options.UserName, options.Password),
 				client.WithAuthPort(options.AuthPort))
 
