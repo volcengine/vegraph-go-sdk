@@ -49,6 +49,7 @@ const (
 	DefaultMaxIdle        = 10
 	DefaultMaxIdleGlobal  = 2147483647
 	DefaultMaxIdleTimeout = time.Millisecond * 2500
+	DefaultRpcTimeout     = time.Millisecond * 6000
 )
 
 type Client struct {
@@ -137,6 +138,7 @@ func NewClient(ops ...Option) (*Client, error) {
 			MaxIdlePerAddress: opts.MaxIdle,
 			MaxIdleTimeout:    opts.MaxIdleTimeout,
 		}),
+		kitex.WithRPCTimeout(opts.RpcTimeout),
 		kitex.WithTransportProtocol(transport.Framed))
 
 	// create kite client
@@ -223,7 +225,7 @@ func (c *Client) submitBatchRequestAuthEncrypted(ctx context.Context, request *b
 	return c.getKlient().GremlinQuery(ctx, request)
 }
 
-// need to check first err with ErrorCode_SYSTEM_ERROR and ErrorCode_INVALID_REQUEST 
+// need to check first err with ErrorCode_SYSTEM_ERROR and ErrorCode_INVALID_REQUEST
 func (c *Client) BatchSubmit(ctx context.Context, query []string, table ...string) ([]structure.Element, []error) {
 	request := &bytegraph.GremlinQueryRequest{
 		Queries:   query,
@@ -241,7 +243,7 @@ func (c *Client) BatchSubmit(ctx context.Context, query []string, table ...strin
 	} else {
 		respErrs = []error{gerrors.New(gerrors.ErrorCode_SYSTEM_ERROR, fmt.Errorf("unexpected error number returned by submitTemplates: %v", errs))}
 	}
-	// respErrs may be not equal to length of query due to ErrorCode_SYSTEM_ERROR and ErrorCode_INVALID_REQUEST 
+	// respErrs may be not equal to length of query due to ErrorCode_SYSTEM_ERROR and ErrorCode_INVALID_REQUEST
 	return elems, respErrs
 }
 
