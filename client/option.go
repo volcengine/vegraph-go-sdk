@@ -37,6 +37,7 @@ type Options struct {
 	MaxIdle         int
 	MaxIdleGlobal   int
 	MaxIdleTimeout  time.Duration
+	RpcTimeout      time.Duration
 	DecodeUseStruct bool
 	// compression 是否开启返回值压缩，用于大数据量下降低带宽。需要集群支持,业务侧无感知。开了可能会导致cpu上升。
 	compression bool
@@ -56,6 +57,7 @@ func newDefaultOptions() *Options {
 		authType:       AuthType_DisableAuth,
 		MaxIdle:        DefaultMaxIdle,
 		MaxIdleTimeout: DefaultMaxIdleTimeout,
+		RpcTimeout:     DefaultRpcTimeout,
 		MaxIdleGlobal:  DefaultMaxIdleGlobal,
 	}
 }
@@ -103,5 +105,11 @@ func WithServiceNamePort(domainName string, port int) Option {
 	return func(op *Options) {
 		op.domainName = domainName
 		op.port = port
+	}
+}
+
+func WithRpcTimeout(d time.Duration) Option {
+	return func(op *Options) {
+		op.RpcTimeout = d
 	}
 }
